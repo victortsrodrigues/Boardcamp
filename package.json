@@ -1,0 +1,14 @@
+{
+  "name": "projeto-modulo5",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [],
+  "author": "Victor Rodrigues",
+  "license": "ISC",
+  "description": "API para gestão de alugeis de jogos"
+}
