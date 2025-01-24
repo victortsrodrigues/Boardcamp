@@ -1,3 +1,4 @@
+import { deleteRentalError } from "../errors/deleteRentalError.js";
 import { finishRentalError } from "../errors/finishRentalError.js";
 import { notFoundError } from "../errors/notFoundError.js";
 import { stockError } from "../errors/stockError.js";
@@ -48,8 +49,7 @@ async function createRental({ customerId, gameId, daysRented }) {
     delayFee: null,
   };
   console.log(body);
-  const newRental = await rentalsRepository.createRental(body);
-  return newRental;
+  await rentalsRepository.createRental(body);
 }
 
 async function finishRental({ id }) {
@@ -57,7 +57,6 @@ async function finishRental({ id }) {
   if (rental.rowCount === 0) throw notFoundError("Rental");
   const currentRental = rental.rows[0];
   if (currentRental.returnDate !== null) throw finishRentalError("Rental");
-  console.log(currentRental);
 
   // Creating a new Date object to avoid modifying the original
   const expectedReturnDate = new Date(currentRental.rentDate);
@@ -70,29 +69,35 @@ async function finishRental({ id }) {
   if (currentDate > expectedReturnDate) {
     const diffTime = currentDate.getTime() - expectedReturnDate.getTime();
     delayDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    console.log(delayDays);
 
     const game = await gamesRepository.searchGameById(currentRental.gameId);
     if (game.rowCount === 0) throw notFoundError("Game");
 
-    console.log(game.rows[0]);
     delayFee = game.rows[0].pricePerDay * delayDays;
   }
-  console.log(delayFee);
+
   const returnDate = new Date().toISOString().split("T")[0];
-  const updatedRental = await rentalsRepository.updateFinishRental(
+  await rentalsRepository.updateFinishRental(
     returnDate,
     delayFee,
     id
   );
-  console.log(updatedRental);
-  return updatedRental;
+}
+
+async function deleteRental({ id }) {
+  const rental = await rentalsRepository.searchRentalById(id);
+  if (rental.rowCount === 0) throw notFoundError("Rental");
+  const currentRental = rental.rows[0];
+  if (currentRental.returnDate === null) throw deleteRentalError("Rental");
+
+  await rentalsRepository.deleteRental(id);
 }
 
 const rentalsServices = {
   getRentals,
   createRental,
   finishRental,
+  deleteRental,
 };
 
 export default rentalsServices;

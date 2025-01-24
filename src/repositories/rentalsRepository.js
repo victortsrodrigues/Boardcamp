@@ -23,7 +23,7 @@ async function createRental({
   originalPrice,
   delayFee,
 }) {
-  const newRental = await db.query(
+  await db.query(
     `INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee")
       VALUES ($1, $2, $3, $4, $5, $6, $7);`,
     [
@@ -36,15 +36,17 @@ async function createRental({
       delayFee,
     ]
   );
-  return newRental;
 }
 
 async function updateFinishRental(returnDate, delayFee, id) {
-  const updatedRental = await db.query(
+  await db.query(
     `UPDATE rentals SET "returnDate" = $1, "delayFee" = $2 WHERE id = $3;`,
     [returnDate, delayFee, id]
   );
-  return updatedRental;
+}
+
+async function deleteRental(id) {
+  await db.query(`DELETE FROM rentals WHERE id=$1;`, [id]);
 }
 
 const rentalsRepository = {
@@ -52,6 +54,7 @@ const rentalsRepository = {
   createRental,
   searchRentalById,
   updateFinishRental,
+  deleteRental,
 };
 
 export default rentalsRepository;

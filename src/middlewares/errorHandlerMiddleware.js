@@ -10,6 +10,8 @@ export default function errorHandler(error, req, res, next) {
     return res.status(httpStatus.UNPROCESSABLE_ENTITY).send(error.message);
   if (error.type === "finishRental")
     return res.status(httpStatus.UNPROCESSABLE_ENTITY).send(error.message);
+  if (error.type === "deleteRental")
+    return res.status(httpStatus.BAD_REQUEST).send(error.message);
 
   res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
 }
