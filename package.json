@@ -10,5 +10,17 @@
   "keywords": [],
   "author": "Victor Rodrigues",
   "license": "ISC",
-  "description": "API para gestão de alugeis de jogos"
+  "description": "API para gestão de alugeis de jogos",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-async-errors": "^3.1.1",
+    "http-status": "^2.1.0",
+    "joi": "^17.13.3",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
 }
