@@ -1,3 +1,4 @@
+import { finishRentalError } from "../errors/finishRentalError.js";
 import { notFoundError } from "../errors/notFoundError.js";
 import { stockError } from "../errors/stockError.js";
 import customersRepository from "../repositories/customersRepository.js";
@@ -46,14 +47,52 @@ async function createRental({ customerId, gameId, daysRented }) {
     originalPrice: daysRented * pricePerDay,
     delayFee: null,
   };
-  console.log(body)
+  console.log(body);
   const newRental = await rentalsRepository.createRental(body);
   return newRental;
+}
+
+async function finishRental({ id }) {
+  const rental = await rentalsRepository.searchRentalById(id);
+  if (rental.rowCount === 0) throw notFoundError("Rental");
+  const currentRental = rental.rows[0];
+  if (currentRental.returnDate !== null) throw finishRentalError("Rental");
+  console.log(currentRental);
+
+  // Creating a new Date object to avoid modifying the original
+  const expectedReturnDate = new Date(currentRental.rentDate);
+  expectedReturnDate.setUTCDate(
+    expectedReturnDate.getUTCDate() + currentRental.daysRented
+  );
+  const currentDate = new Date();
+  let delayDays = 0;
+  let delayFee = null;
+  if (currentDate > expectedReturnDate) {
+    const diffTime = currentDate.getTime() - expectedReturnDate.getTime();
+    delayDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    console.log(delayDays);
+
+    const game = await gamesRepository.searchGameById(currentRental.gameId);
+    if (game.rowCount === 0) throw notFoundError("Game");
+
+    console.log(game.rows[0]);
+    delayFee = game.rows[0].pricePerDay * delayDays;
+  }
+  console.log(delayFee);
+  const returnDate = new Date().toISOString().split("T")[0];
+  const updatedRental = await rentalsRepository.updateFinishRental(
+    returnDate,
+    delayFee,
+    id
+  );
+  console.log(updatedRental);
+  return updatedRental;
 }
 
 const rentalsServices = {
   getRentals,
   createRental,
+  finishRental,
 };
 
 export default rentalsServices;

@@ -10,9 +10,15 @@ async function createRental(req, res) {
   res.status(201).send("Created");
 }
 
+async function finishRental(req, res) {
+  const finishedRental = await rentalsServices.finishRental(req.params);
+  res.status(200).send("Ok");
+}
+
 const rentalsController = {
   getRentals,
-  createRental
+  createRental,
+  finishRental,
 };
 
 export default rentalsController;

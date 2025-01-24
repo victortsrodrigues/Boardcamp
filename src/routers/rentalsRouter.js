@@ -7,5 +7,6 @@ const rentalsRouter = Router();
 
 rentalsRouter.get("/rentals", rentalsController.getRentals);
 rentalsRouter.post("/rentals", validateSchema(rentalSchema), rentalsController.createRental)
+rentalsRouter.post("/rentals/:id/return", rentalsController.finishRental)
 
 export default rentalsRouter;
