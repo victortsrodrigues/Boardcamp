@@ -23,7 +23,6 @@ async function createCustomer(name, phone, cpf) {
     `INSERT INTO customers (name, phone, cpf) VALUES ($1, $2, $3);`,
     [name, phone, cpf]
   );
-  console.log(newCustomer);
   return newCustomer;
 }
 

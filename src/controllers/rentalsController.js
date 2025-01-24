@@ -5,8 +5,14 @@ async function getRentals(req, res) {
   res.status(200).send(rentals);
 }
 
+async function createRental(req, res) {
+  const newRental = await rentalsServices.createRental(req.body);
+  res.status(201).send("Created");
+}
+
 const rentalsController = {
   getRentals,
+  createRental
 };
 
 export default rentalsController;
